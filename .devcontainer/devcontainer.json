@@ -1,18 +1,7 @@
 {
-  "name": "FFmpegKit Plugin",
+  "name": "FFmpegKit Plugin Build",
   "image": "mcr.microsoft.com/devcontainers/android:1-14",
-  "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "17"
-    }
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "google.android",
-        "redhat.java"
-      ]
-    }
-  },
-  "postCreateCommand": "sdkmanager 'platforms;android-33' 'build-tools;33.0.0'"
+  "features": {},
+  "postCreateCommand": "",
+  "postStartCommand": "sdkmanager 'platforms;android-33' 'build-tools;33.0.0' || true"
 }
