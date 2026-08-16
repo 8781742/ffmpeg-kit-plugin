@@ -1,0 +1,11 @@
+tasks:
+  - name: Install Android SDK
+    init: |
+      sdkmanager "platforms;android-33" "build-tools;33.0.0"
+    command: |
+      ./gradlew assembleDebug
+
+vscode:
+  extensions:
+    - google.android
+    - redhat.java

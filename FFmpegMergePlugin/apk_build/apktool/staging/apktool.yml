@@ -1,0 +1,12 @@
+version: 2.2.4
+apkFileName: FFmpegMerge.apk
+isFrameworkApk: false
+packageInfo:
+  applicationId: com.ec.ffmpeg
+  minSdkVersion: 21
+  targetSdkVersion: 28
+  versionCode: 1
+  versionName: '1.0'
+sdkInfo:
+  minSdkVersion: '21'
+  targetSdkVersion: '28'

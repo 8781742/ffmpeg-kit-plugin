@@ -1,0 +1,73 @@
+# Build outputs
+build/
+app/build/
+.gradle/
+local.properties
+
+# Android
+*.apk
+*.dex
+*.aar
+*.so
+*.zip
+!FFmpegMerge.dex
+
+# FFmpeg
+FFmpegKit.aar
+FFmpegKitPlugin_full/app/libs/
+FFmpegMergePlugin/output/
+FFmpegMergePlugin/apkproject/
+FFmpegMergePlugin/smali_com/
+FFmpegPlugin/output/
+tengxun/libs/
+tengxun/src/assets/ffmpegkit/
+ffmpeg-6.0-*/
+ffmpeg-android-build-master/*/output/
+ffmpeg-kit-audio-*.aar
+ffmpeg_from_apk.so
+ffmpeg-6.0-arm64-static.tar.xz
+
+# Binaries
+*.exe
+ec_work_config/android/bin/ec-android-cli.exe
+
+# SDK
+android-sdk/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+ai_logs/
+Developer
+Tokens
+
+# Node
+node_modules/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Images
+ec_work_config/android/colorimage/
+ec_work_config/android/nodeimage/
+ffmpeg-android-build-master/ffmpeg-android-build-master/images/
+
+# Source maps
+*.js.map
+*.d.ts.map
+
+# Build artifacts
+_ffmpeg_merge_plugin.js
+_test_*.js
+_extract_mhtml.ps1
+_extract_mhtml.txt
+_*.mhtml
+
+# Git backup
+_git_backup/

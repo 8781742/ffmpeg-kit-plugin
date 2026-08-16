@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <title>抖音数据采集</title>
+    <style>
+        :root {
+            --primary: #FE2C55;
+            --primary-dark: #E81A48;
+            --primary-light: #FF5E7D;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3436;
+            --text-secondary: #636E72;
+            --success: #00C853;
+            --warning: #FF9100;
+            --border: #E8ECF1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --radius: 14px;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text); }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 32px 20px 28px;
+            text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .header::after { content: ''; position: absolute; top: -40px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+        .header::before { content: ''; position: absolute; bottom: -50px; left: 20px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        .header-icon { font-size: 40px; margin-bottom: 6px; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); position: relative; z-index: 1; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 700; color: #FFF; letter-spacing: 1px; position: relative; z-index: 1; }
+        .header .subtitle { margin: 6px 0 0; font-size: 13px; color: rgba(255,255,255,0.85); letter-spacing: 2px; position: relative; z-index: 1; }
+
+        .content { padding: 16px 14px 24px; max-width: 600px; margin: 0 auto; }
+
+        .card-wrap {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden;
+        }
+        .card-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 16px 18px 0; font-size: 15px; font-weight: 700; color: var(--text);
+        }
+        .card-header .icon { font-size: 18px; }
+        .card-body { padding: 12px 18px 18px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 5px; letter-spacing: 0.3px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-size: 14px; color: var(--text);
+            background: #FAFBFC; transition: all 0.2s; outline: none; font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary); background: #FFF;
+            box-shadow: 0 0 0 3px rgba(254,44,85,0.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+        .form-group .hint { font-size: 11px; color: #B2BEC3; margin-top: 3px; }
+
+        .range-row { display: flex; align-items: center; gap: 12px; }
+        .range-row input[type="range"] {
+            flex: 1; -webkit-appearance: none; height: 6px;
+            background: var(--border); border-radius: 3px; outline: none; padding: 0; border: none;
+        }
+        .range-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+            background: var(--primary); cursor: pointer;
+            box-shadow: 0 2px 6px rgba(254,44,85,0.3); border: 2px solid #FFF;
+        }
+        .range-val {
+            min-width: 40px; text-align: center; font-size: 18px;
+            font-weight: 700; color: var(--primary);
+        }
+
+        /* Status Panel */
+        .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #B2BEC3; flex-shrink: 0; }
+        .status-dot.running { background: var(--success); box-shadow: 0 0 8px rgba(0,200,83,0.4); animation: pulse 1.5s infinite; }
+        .status-dot.error { background: #FF1744; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        .progress-wrap { background: #F0F2F5; border-radius: 8px; height: 8px; overflow: hidden; margin: 8px 0; }
+        .progress-bar {
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 8px; width: 0%; transition: width 0.4s ease;
+        }
+
+        .stats-grid { display: flex; gap: 10px; margin-top: 8px; }
+        .stat-item { flex: 1; text-align: center; padding: 10px; background: #F8F9FB; border-radius: 10px; }
+        .stat-val { font-size: 20px; font-weight: 700; color: var(--text); }
+        .stat-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+        /* Buttons */
+        .btn-row { display: flex; gap: 10px; }
+        .btn {
+            border: none; border-radius: 10px; padding: 13px 20px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; letter-spacing: 0.5px; outline: none;
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; font-family: inherit;
+        }
+        .btn-primary {
+            flex: 1; background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #FFF; box-shadow: 0 4px 14px rgba(254,44,85,0.3);
+        }
+        .btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(254,44,85,0.3); }
+        .btn-danger {
+            background: #FFF; color: #FF1744; border: 1.5px solid #FFCDD2; flex: 1;
+        }
+        .btn-danger:active { background: #FFF5F5; transform: scale(0.97); }
+        .btn-outline {
+            width: 100%; background: #FFF; color: var(--text-secondary);
+            border: 1.5px solid var(--border);
+        }
+        .btn-outline:active { background: #F5F6FA; transform: scale(0.97); }
+
+        .waves-effect { z-index: auto !important; }
+        input[type=range]:focus { border: none !important; box-shadow: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <span class="header-icon">🎵</span>
+    <h1>抖音 → 腾讯视频</h1>
+    <p class="subtitle">采集下载 · 智能合并 · 自动上传</p>
+</div>
+
+<div class="content">
+
+<!-- ====== 目标设置 ====== -->
+<div class="card-wrap">
+    <div class="card-header"><span class="icon">📱</span> 目标设置</div>
+    <div class="card-body">
+        <div class="form-group">
+            <label>📎 抖音主页链接（多行/逗号分隔）</label>
+            <textarea id="linkInput" placeholder="https://www.douyin.com/user/MS4wLjABAAAA...&#10;也支持短链接 v.douyin.com/xxx"></textarea>
+            <div class="hint">💡 推荐用完整链接，最可靠</div>
+        </div>
+        <div class="form-group">
+            <label>🍪 Cookie</label>
+            <textarea id="cookieInput" placeholder="浏览器 F12 → Application → Cookies 复制"></textarea>
+            <div class="hint">⚠️ Cookie 约24小时过期</div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 下载设置 ====== -->
+<div class="card-wrap">
+    <div class="card-header"><span class="icon">⚙️</span> 下载设置</div>
+    <div class="card-body">
+        <div class="form-group">
+            <label>💾 保存路径</label>
+            <input type="text" id="savePath" placeholder="/sdcard/Download/抖音下载/">
+        </div>
+        <div class="form-group">
+            <label>📂 合集名称（每行一个，留空=自动获取全部）</label>
+            <textarea id="mixNamesInput" placeholder="少儿动画&#10;合集名称2"></textarea>
+            <div class="hint">💡 在抖音App中查看合集名称</div>
+        </div>
+        <div class="form-group">
+            <label>🔢 每个合集最多上传组数（0=不限）</label>
+            <div class="range-row">
+                <input type="range" id="downloadLimit" min="0" max="50" value="0">
+                <span class="range-val" id="downloadLimitVal">不限</span>
+            </div>
+            <div class="hint">💡 每组合并2集，限制的是"组数"不是"集数"</div>
+        </div>
+        <div class="form-group">
+            <label>🚀 下载并发线程数</label>
+            <div class="range-row">
+                <input type="range" id="maxThread" min="1" max="10" value="5">
+                <span class="range-val" id="threadVal">5</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 运行状态 ====== -->
+<div class="card-wrap" id="statusCard">
+    <div class="card-header"><span class="icon">📊</span> 运行状态</div>
+    <div class="card-body">
+        <div class="status-row">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText" style="font-size:14px;font-weight:600;">● 就绪</span>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">📥 已采集</div></div>
+            <div class="stat-item"><div class="stat-val" id="statSuccess">0</div><div class="stat-lbl">✅ 成功</div></div>
+            <div class="stat-item"><div class="stat-val" id="statFail">0</div><div class="stat-lbl">❌ 失败</div></div>
+            <div class="stat-item"><div class="stat-val" id="statUploaded">0</div><div class="stat-lbl">📤 已上传</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 操作按钮 ====== -->
+<div class="btn-row" style="margin-bottom:10px;">
+    <button class="btn btn-primary" onclick="startCollect()">▶ 开始采集上传</button>
+    <button class="btn btn-danger" onclick="stopCollect()">■ 停止</button>
+</div>
+<button class="btn btn-outline" onclick="window.ec.showLogWindow()">📋 查看运行日志</button>
+
+</div>
+
+<!-- Scripts -->
+<script src="/htmljs/jquery.min.js"></script>
+<script src="/htmljs/materialize.min.js"></script>
+<script>
+$(function () {
+    window.ec.hideStartBtn();
+
+    // 恢复配置
+    var v;
+    if ((v = window.ec.getConfig("linkInput"))) $("#linkInput").val(v);
+    if ((v = window.ec.getConfig("cookieInput"))) $("#cookieInput").val(v);
+    if ((v = window.ec.getConfig("savePath"))) $("#savePath").val(v); else $("#savePath").val("/sdcard/Download/抖音下载/");
+    if ((v = window.ec.getConfig("mixNamesInput"))) $("#mixNamesInput").val(v);
+    var dl = window.ec.getConfig("downloadLimit");
+    $("#downloadLimit").val(dl || 0);
+    updateLimitDisplay(dl || 0);
+    var mt = window.ec.getConfig("maxThread");
+    if (mt) { $("#maxThread").val(mt); $("#threadVal").text(mt); }
+
+    restoreStatus();
+
+    // 事件绑定
+    $("#maxThread").on("input", function () { $("#threadVal").text($(this).val()); });
+    $("#downloadLimit").on("input", function () { updateLimitDisplay($(this).val()); });
+});
+
+function updateLimitDisplay(val) {
+    val = parseInt(val) || 0;
+    $("#downloadLimitVal").text(val === 0 ? "不限" : val);
+}
+
+function restoreStatus() {
+    if (window.ec.getConfig("_running") === "true") {
+        $("#statusDot").addClass("running");
+        $("#statusText").text("● 运行中");
+    }
+    $("#statTotal").text(window.ec.getConfig("_statTotal") || "0");
+    $("#statSuccess").text(window.ec.getConfig("_statSuccess") || "0");
+    $("#statFail").text(window.ec.getConfig("_statFail") || "0");
+    $("#statUploaded").text(window.ec.getConfig("_statUploaded") || "0");
+}
+
+function autoSave() {
+    window.ec.saveConfig("linkInput", $("#linkInput").val());
+    window.ec.saveConfig("cookieInput", $("#cookieInput").val());
+    window.ec.saveConfig("savePath", $("#savePath").val());
+    window.ec.saveConfig("mixNamesInput", $("#mixNamesInput").val());
+    window.ec.saveConfig("downloadLimit", $("#downloadLimit").val());
+    window.ec.saveConfig("maxThread", $("#maxThread").val());
+}
+
+function startCollect() {
+    autoSave();
+    $("#statusDot").addClass("running");
+    $("#statusText").text("● 运行中");
+    window.ec.saveConfig("_running", "true");
+    window.ec.saveConfig("_statTotal", "0");
+    window.ec.saveConfig("_statSuccess", "0");
+    window.ec.saveConfig("_statFail", "0");
+    window.ec.saveConfig("_statUploaded", "0");
+    $("#statTotal").text("0"); $("#statSuccess").text("0");
+    $("#statFail").text("0"); $("#statUploaded").text("0");
+    $("#progressBar").css("width", "0%");
+    window.ec.toast("开始采集上传...");
+    window.ec.start();
+}
+
+function stopCollect() {
+    window.ec.saveConfig("_running", "false");
+    $("#statusDot").removeClass("running");
+    $("#statusText").text("● 已停止");
+    window.ec.toast("已停止");
+    window.ec.stopTask();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <title>使用说明</title>
+    <style>
+        :root {
+            --primary: #FE2C55;
+            --primary-light: #FF5E7D;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3436;
+            --text-secondary: #636E72;
+            --success: #00C853;
+            --warning: #FF9100;
+            --border: #E8ECF1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 24px 20px;
+            text-align: center;
+        }
+        .header-icon { font-size: 32px; display: block; margin-bottom: 4px; }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFF;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 14px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card-wrap {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 18px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .card-body { padding: 12px 18px 18px; }
+
+        /* Service Row */
+        .svc-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .svc-row:last-child { border-bottom: none; }
+        .svc-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .svc-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        .svc-badge.ok { background: #E8F5E9; color: #2E7D32; }
+        .svc-badge.err { background: #FFEBEE; color: #C62828; }
+
+        /* Step List */
+        .step-list { list-style: none; padding: 0; margin: 0; }
+        .step-list li {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #FFF;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tips */
+        .tip-list { padding: 0; margin: 0; list-style: none; }
+        .tip-list li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 5px 0;
+            line-height: 1.5;
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+        .tip-list li::before { content: '·'; font-weight: 700; color: var(--primary); }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            width: 100%;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #FFF;
+            box-shadow: 0 3px 10px rgba(254,44,85,0.25);
+            margin-bottom: 8px;
+        }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-outline {
+            background: #FFF;
+            color: var(--text-secondary);
+            border: 1.5px solid var(--border);
+        }
+        .btn-outline:active { background: #F5F6FA; }
+
+        /* Switch */
+        .switch-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .switch-wrap label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #CCC;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #FFF;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .waves-effect { z-index: auto !important; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-icon">📖</span>
+    <h1>使用说明 &amp; 诊断</h1>
+</div>
+
+<div class="content">
+
+<!-- ====== 环境状态 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>🔧</span> 环境状态
+    </div>
+    <div class="card-body">
+        <div class="svc-row">
+            <span class="svc-label">🚀 运行模式</span>
+            <span class="svc-badge ok" id="service">检测中...</span>
+        </div>
+        <div class="svc-row">
+            <span class="svc-label">🤖 自动化服务</span>
+            <span class="svc-badge err" id="serviceBadge">未启动</span>
+        </div>
+        <div class="svc-row">
+            <span class="svc-label">🪟 悬浮窗权限</span>
+            <span class="svc-badge err" id="floatBadge">未授权</span>
+        </div>
+        <div style="margin-top: 12px;">
+            <button class="btn btn-primary" onclick="openEnv()">🔌 启动自动化环境</button>
+            <button class="btn btn-outline" onclick="floatViewPermission()">🪟 开启悬浮窗权限</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 使用步骤 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>📝</span> 使用步骤
+    </div>
+    <div class="card-body">
+        <ol class="step-list">
+            <li><span class="step-num">1</span> 在「参数设置」中填入目标用户的主页链接</li>
+            <li><span class="step-num">2</span> 从浏览器粘贴有效的 Cookie</li>
+            <li><span class="step-num">3</span> 设置保存路径和下载线程数</li>
+            <li><span class="step-num">4</span> 选择需要采集的内容类型</li>
+            <li><span class="step-num">5</span> 点击「开始采集」启动任务</li>
+        </ol>
+    </div>
+</div>
+
+<!-- ====== 注意事项 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>⚠️</span> 注意事项
+    </div>
+    <div class="card-body">
+        <ul class="tip-list">
+            <li>Cookie 约24小时过期，采集失败或返回空数据时需要重新获取</li>
+            <li>频繁请求可能触发抖音风控机制，建议线程数不超过5</li>
+            <li>确保设备存储空间充足，视频文件占用较大</li>
+            <li>无障碍服务需在系统设置中手动开启后，在此页面确认状态</li>
+            <li>部分系统需手动授权悬浮窗权限才能显示日志窗口</li>
+            <li>定时任务依赖自动化服务保持运行，请勿在锁屏后杀死应用</li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+<script src="/htmljs/jquery.min.js"></script>
+<script src="/htmljs/materialize.min.js"></script>
+
+<script>
+    $(function () {
+        refreshStatus();
+    });
+
+    function refreshStatus() {
+        // 运行模式
+        var mode = window.ec.isAccMode() ? "无障碍服务" : "代理服务";
+        $("#service").text(mode);
+
+        // 自动化服务状态
+        var svcOk = false;
+        if (window.ec.isAccMode()) {
+            svcOk = window.ec.isAccServiceOk();
+        } else {
+            svcOk = window.ec.isAgentServiceOk();
+        }
+        updateBadge("serviceBadge", svcOk, "运行中", "未启动");
+
+        // 悬浮窗权限
+        var floatOk = window.ec.hasFloatViewPermission();
+        updateBadge("floatBadge", floatOk, "已授权", "未授权");
+    }
+
+    function updateBadge(id, ok, okText, errText) {
+        var el = $("#" + id);
+        if (ok) {
+            el.text(okText).removeClass("err").addClass("ok");
+        } else {
+            el.text(errText).removeClass("ok").addClass("err");
+        }
+    }
+
+    function openEnv() {
+        var r = window.ec.startEnv();
+        window.ec.toast("启动环境: " + (r ? "成功" : "失败"));
+        setTimeout(refreshStatus, 1500);
+    }
+
+    function floatViewPermission() {
+        var r = window.ec.requestFloatViewPermission(10);
+        window.ec.toast("悬浮窗权限: " + (r ? "已授权" : "未授权"));
+        setTimeout(refreshStatus, 500);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "easyclick-mcp-server",
+  "version": "1.0.0",
+  "description": "EasyClick MCP Server — AI驱动的EC自动化脚本开发工具集，提供API查询、日志解析、图色识别、脚本生成等全栈能力",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "ec-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "postinstall": "echo Ready. Run: npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": ["easyclick", "mcp", "automation", "android", "ios", "harmonyos"],
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__easyclick__ec_project_info",
+      "Read(//d/ec/tengxun/**)",
+      "Bash(./ec_work_config/android/bin/ec-android-cli capture-screen *)",
+      "Bash(./ec_work_config/android/bin/ec-android-cli capture-node *)",
+      "Bash(./ec_work_config/android/bin/ec-android-cli run *)",
+      "Bash(cd *)",
+      "mcp__easyclick__ec_api_query",
+      "Bash(./ec_work_config/android/bin/ec-android-cli preview *)"
+    ]
+  }
+}

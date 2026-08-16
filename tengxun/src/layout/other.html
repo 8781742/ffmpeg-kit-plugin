@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <title>其他</title>
+    <style>
+        :root {
+            --primary: #FE2C55;
+            --primary-light: #FF5E7D;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3436;
+            --text-secondary: #636E72;
+            --border: #E8ECF1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 24px 20px;
+            text-align: center;
+        }
+        .header-icon { font-size: 32px; display: block; margin-bottom: 4px; }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFF;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 14px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card-wrap {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 18px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .card-body { padding: 12px 18px 18px; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-lbl { color: var(--text-secondary); font-weight: 500; }
+        .info-val { color: var(--text); font-weight: 600; text-align: right; }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            width: 100%;
+        }
+        .btn-action {
+            background: #FFF;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            margin-bottom: 8px;
+        }
+        .btn-action:last-child { margin-bottom: 0; }
+        .btn-action:active { background: #F5F6FA; transform: scale(0.97); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-icon">ℹ️</span>
+    <h1>关于 &amp; 工具</h1>
+</div>
+
+<div class="content">
+
+<!-- ====== 项目信息 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>📦</span> 项目信息
+    </div>
+    <div class="card-body">
+        <div class="info-row">
+            <span class="info-lbl">项目名称</span>
+            <span class="info-val">抖音数据采集</span>
+        </div>
+        <div class="info-row">
+            <span class="info-lbl">模块名</span>
+            <span class="info-val">tengxun</span>
+        </div>
+        <div class="info-row">
+            <span class="info-lbl">引擎</span>
+            <span class="info-val">EasyClick 8.x</span>
+        </div>
+        <div class="info-row">
+            <span class="info-lbl">平台</span>
+            <span class="info-val">Android 免Root</span>
+        </div>
+        <div class="info-row">
+            <span class="info-lbl">运行模式</span>
+            <span class="info-val">无障碍服务</span>
+        </div>
+        <div class="info-row">
+            <span class="info-lbl">存储路径</span>
+            <span class="info-val">/sdcard/Download/抖音下载/</span>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 快捷操作 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>📋</span> 快捷操作
+    </div>
+    <div class="card-body">
+        <button class="btn btn-action" onclick="window.ec.showLogWindow()">📋 查看运行日志</button>
+        <button class="btn btn-action" onclick="clearCache()">🗑️ 清除缓存数据</button>
+        <button class="btn btn-action" onclick="showStats()">📊 查看数据统计</button>
+        <button class="btn btn-action" onclick="window.ec.openECSystemSetting()">⚙️ 系统设置</button>
+    </div>
+</div>
+
+</div>
+
+<script src="/htmljs/jquery.min.js"></script>
+<script src="/htmljs/materialize.min.js"></script>
+
+<script>
+    function clearCache() {
+        window.ec.removeAllUIConfig();
+        window.ec.toast("✅ 缓存数据已清除");
+    }
+
+    function showStats() {
+        var total = window.ec.getConfig("_statTotal") || "0";
+        var success = window.ec.getConfig("_statSuccess") || "0";
+        var fail = window.ec.getConfig("_statFail") || "0";
+        var msg = "📊 已采集: " + total + " | 成功: " + success + " | 失败: " + fail;
+        window.ec.toast(msg);
+    }
+</script>
+
+</body>
+</html>

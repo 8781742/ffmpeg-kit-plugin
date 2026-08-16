@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <title>定时任务</title>
+    <style>
+        :root {
+            --primary: #FE2C55;
+            --primary-light: #FF5E7D;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3436;
+            --text-secondary: #636E72;
+            --border: #E8ECF1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 24px 20px;
+            text-align: center;
+        }
+        .header-icon { font-size: 32px; display: block; margin-bottom: 4px; }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFF;
+            letter-spacing: 1px;
+        }
+
+        .content {
+            padding: 14px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card-wrap {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 18px 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .card-body { padding: 12px 18px 18px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text);
+            background: #FAFBFC;
+            transition: all 0.2s;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            background: #FFF;
+            box-shadow: 0 0 0 3px rgba(254,44,85,0.08);
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .check-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #FFF;
+            box-shadow: 0 3px 10px rgba(254,44,85,0.25);
+        }
+        .btn:active { transform: scale(0.97); }
+
+        /* Override Materialize */
+        .waves-effect { z-index: auto !important; }
+        .datepicker-table td.is-selected, .datepicker-date-display {
+            background-color: var(--primary) !important;
+        }
+        .timepicker-digital-display { background-color: var(--primary) !important; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-icon">⏰</span>
+    <h1>定时任务</h1>
+</div>
+
+<div class="content">
+
+<!-- ====== 日期定时 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>📅</span> 日期定时
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <label>📆 执行日期</label>
+            <input type="text" class="datepicker" id="task1_date" placeholder="选择日期">
+        </div>
+        <div class="form-group">
+            <label>🕐 执行时间</label>
+            <input type="text" class="timepicker" id="task1_time" placeholder="选择时间">
+        </div>
+        <label class="check-row">
+            <input type="checkbox" id="task1_cancel_before" checked>
+            <span>执行时先取消正在运行的任务</span>
+        </label>
+        <div style="margin-top:12px;">
+            <button class="btn" onclick="startTimer(1)">📅 开启日期定时</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 间隔定时 ====== -->
+<div class="card-wrap">
+    <div class="card-header">
+        <span>⏱️</span> 间隔定时
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <label>⏳ 多少分钟后执行</label>
+            <input type="number" id="task2_time" placeholder="输入分钟数" min="1">
+        </div>
+        <label class="check-row">
+            <input type="checkbox" id="task2_cancel_before" checked>
+            <span>执行时先取消正在运行的任务</span>
+        </label>
+        <div style="margin-top:12px;">
+            <button class="btn" onclick="startTimer(2)">⏱️ 开启间隔定时</button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script src="/htmljs/jquery.min.js"></script>
+<script src="/htmljs/materialize.min.js"></script>
+
+<script>
+    $(function () {
+        $('.datepicker').datepicker({
+            format: "yyyy-mm-dd",
+            autoClose: true,
+            container: 'body'
+        });
+        $('.timepicker').timepicker({
+            twelveHour: false,
+            autoClose: true,
+            container: 'body'
+        });
+
+        // 还原历史记录 - 任务1
+        var type = 1;
+        $("#task" + type + "_time").val(window.ec.getConfig("task" + type + "_time"));
+        $("#task" + type + "_date").val(window.ec.getConfig("task" + type + "_date"));
+        var c = window.ec.getConfig("task" + type + "_cancel_before");
+        if (c === "true") {
+            $("#task" + type + "_cancel_before").attr("checked", true);
+        } else if (c === "false") {
+            $("#task" + type + "_cancel_before").attr("checked", false);
+        }
+
+        // 还原历史记录 - 任务2
+        type = 2;
+        $("#task" + type + "_time").val(window.ec.getConfig("task" + type + "_time"));
+        c = window.ec.getConfig("task" + type + "_cancel_before");
+        if (c === "true") {
+            $("#task" + type + "_cancel_before").attr("checked", true);
+        } else if (c === "false") {
+            $("#task" + type + "_cancel_before").attr("checked", false);
+        }
+    });
+
+    function startTimer(type) {
+        window.ec.showLogWindow();
+        var time = $("#task" + type + "_time").val();
+        var cancel_before = $("#task" + type + "_cancel_before").prop("checked");
+        var date = $("#task" + type + "_date").val();
+        if (time == null || time == '') {
+            M.toast({html: '❌ 请填写时间'});
+            return;
+        }
+        if (type == 1) {
+            if (date == null || date == '') {
+                M.toast({html: '❌ 请填写日期'});
+                return;
+            }
+        }
+
+        // 保存历史记录
+        window.ec.saveConfig("task" + type + "_time", time);
+        window.ec.saveConfig("task" + type + "_date", date);
+        window.ec.saveConfig("task" + type + "_cancel_before", cancel_before);
+
+        var taskTag = "task" + type;
+        var after = null;
+        if (type == 1) {
+            after = (date + " " + time);
+            window.ec.logd("任务" + taskTag + " 定时: " + after);
+        } else {
+            after = time * 60;
+            window.ec.logd("任务" + taskTag + " 定时: " + (time) + " 分钟后");
+        }
+
+        var jobid = window.ec.startJob(taskTag, after, cancel_before);
+        if (jobid > 0) {
+            window.ec.logd("创建任务成功 ID: " + jobid);
+            M.toast({html: '✅ 定时任务创建成功 [' + taskTag + ']'});
+        } else {
+            window.ec.logd("创建任务失败 ID: " + jobid);
+            M.toast({html: '❌ 定时任务创建失败 [' + taskTag + ']'});
+        }
+    }
+</script>
+
+</body>
+</html>

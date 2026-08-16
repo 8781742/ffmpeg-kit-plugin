@@ -1,0 +1,413 @@
+// ============================================
+// EasyClick M3U8 下载器 - 调试版
+// ============================================
+
+importClass(java.io.File);
+importClass(java.io.FileOutputStream);
+importClass(java.io.BufferedInputStream);
+importClass(java.io.BufferedOutputStream);
+importClass(java.io.InputStreamReader);
+importClass(java.io.BufferedReader);
+importClass(java.net.URL);
+importClass(java.net.HttpURLConnection);
+
+// ----- 配置 -----
+var CONFIG = {
+    m3u8Url:"https://cache.0567890.xyz:4433/Cache/qq/e62665170d11cfc958d7f9634343ce81.m3u8?vkey=6131366155564542555159424267494941416456566c6c524156514255413843416c4e56424163465641745743565a5156516c5845476c376448526d",
+    tempFolder: "/sdcard/Download/m3u8_temp/",
+    outputPath: "/sdcard/Download/merged_video.mp4",
+    threadCount: 3,
+    timeout: 30000
+};
+
+// ----- 方法1：使用 http.httpGet（带完整参数）-----
+function fetchWithHttpGet(url) {
+    logi("📥 [方法1] 使用 http.httpGet...");
+
+    try {
+        var params = {
+            "ver": "4"
+        };
+        var headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer": "https://v.smtcdns.com/",
+            "Accept": "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Cache-Control": "no-cache"
+        };
+
+        var response = http.httpGet(url, params, CONFIG.timeout, headers);
+
+        // 打印完整响应信息用于调试
+        logi("📊 response 对象: " + typeof response);
+        if (response) {
+            logi("📊 response.statusCode: " + response.statusCode);
+            logi("📊 response.body: " + (response.body ? "存在" : "为空"));
+            if (response.body) {
+                logi("📊 response.body 类型: " + typeof response.body);
+                var content = response.body.string();
+                logi("📊 内容长度: " + content.length);
+                if (content.length > 0) {
+                    logi("📄 内容预览: " + content.substring(0, 300));
+                    return content;
+                } else {
+                    logi("⚠️ 内容为空字符串");
+                }
+            }
+        } else {
+            logi("❌ response 为 null");
+        }
+        return null;
+
+    } catch (e) {
+        logi("❌ httpGet 异常: " + e.message);
+        e.printStackTrace();
+        return null;
+    }
+}
+
+// ----- 方法2：使用 HttpURLConnection（更底层，能看到更多信息）-----
+function fetchWithHttpURLConnection(urlStr) {
+    logi("📥 [方法2] 使用 HttpURLConnection...");
+
+    try {
+        var url = new URL(urlStr);
+        var connection = url.openConnection();
+
+        // 设置请求头
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+        connection.setRequestProperty("Referer", "https://v.smtcdns.com/");
+        connection.setRequestProperty("Accept", "*/*");
+        connection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+        connection.setRequestProperty("Connection", "keep-alive");
+        connection.setConnectTimeout(CONFIG.timeout);
+        connection.setReadTimeout(CONFIG.timeout);
+        connection.setInstanceFollowRedirects(true); // 自动跟随重定向
+
+        connection.connect();
+
+        var statusCode = connection.getResponseCode();
+        logi("📊 状态码: " + statusCode);
+        logi("📊 响应消息: " + connection.getResponseMessage());
+
+        // 打印所有响应头（调试用）
+        var headerFields = connection.getHeaderFields();
+        var headerKeys = headerFields.keySet().iterator();
+        logi("📊 响应头:");
+        while (headerKeys.hasNext()) {
+            var key = headerKeys.next();
+            var value = headerFields.get(key);
+            if (key) {
+                logi("   " + key + ": " + value);
+            }
+        }
+
+        if (statusCode != 200) {
+            // 尝试读取错误流
+            try {
+                var errorStream = connection.getErrorStream();
+                if (errorStream) {
+                    var reader = new BufferedReader(new InputStreamReader(errorStream));
+                    var errorMsg = "";
+                    var line = "";
+                    while ((line = reader.readLine()) != null) {
+                        errorMsg += line;
+                    }
+                    reader.close();
+                    logi("❌ 错误信息: " + errorMsg);
+                }
+            } catch (e) {}
+            connection.disconnect();
+            return null;
+        }
+
+        // 读取内容
+        var inputStream = connection.getInputStream();
+        var reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        var content = "";
+        var line = "";
+        while ((line = reader.readLine()) != null) {
+            content += line + "\n";
+        }
+        reader.close();
+        inputStream.close();
+        connection.disconnect();
+
+        logi("✅ 获取成功，内容长度: " + content.length);
+        if (content.length > 0) {
+            logi("📄 内容预览: " + content.substring(0, Math.min(300, content.length)));
+        } else {
+            logi("⚠️ 内容为空");
+        }
+        return content;
+
+    } catch (e) {
+        logi("❌ HttpURLConnection 异常: " + e.message);
+        e.printStackTrace();
+        return null;
+    }
+}
+
+// 清理临时文件
+function cleanTemp(folderPath) {
+    try {
+        var folder = new File(folderPath);
+        if (folder.exists()) {
+            var files = folder.listFiles();
+            if (files) {
+                for (var i = 0; i < files.length; i++) {
+                    try {
+                        files[i].delete();
+                    } catch (e) {}
+                }
+            }
+            folder.delete();
+            logi("🧹 临时文件已清理");
+        }
+    } catch (e) {
+        logi("⚠️ 清理失败: " + e.message);
+    }
+}
+
+// ----- 解析 M3U8 -----
+function parseM3U8(m3u8Content, m3u8Url) {
+    logi("🔍 开始解析 M3U8...");
+
+    if (!m3u8Content || m3u8Content.length == 0) {
+        logi("❌ 内容为空");
+        return null;
+    }
+
+    var lines = m3u8Content.split("\n");
+    var tsUrls = [];
+
+    // 获取基础 URL（去掉最后的文件名）
+    var baseUrl = m3u8Url.substring(0, m3u8Url.lastIndexOf("/") + 1);
+    logi("🏗️ 基础 URL: " + baseUrl);
+
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line == "" || line.startsWith("#")) {
+            continue;
+        }
+
+        // 这里 line 是相对路径，需要拼接完整 URL
+        // 例如: 00_gzc_...ts?index=0&...
+        var fullUrl = baseUrl + line;
+        tsUrls.push(fullUrl);
+
+        if (tsUrls.length <= 3) {
+            logi("🔗 示例 URL " + tsUrls.length + ": " + fullUrl);
+        }
+    }
+
+    logi("✅ 解析完成，共 " + tsUrls.length + " 个片段");
+    return tsUrls;
+}
+
+// ----- 下载单个 TS -----
+function downloadSingleTs(tsUrl, savePath) {
+    try {
+        var params = {};
+        var headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": "https://v.smtcdns.com/"
+        };
+
+        var response = http.httpGet(tsUrl, params, CONFIG.timeout, headers);
+
+        // if (!response || !response.body) {
+        //     return false;
+        // }
+        //
+        // var data = response.body.bytes();
+        // if (!data || data.length == 0) {
+        //     return false;
+        // }
+
+        // var file = new File(savePath);
+        // file.getParentFile().mkdirs();
+        // var outputStream = new BufferedOutputStream(new FileOutputStream(file));
+        // outputStream.write(data, 0, data.length);
+        // outputStream.flush();
+        // outputStream.close();
+
+
+            var x = http.downloadFile(tsUrl, savePath, 10 * 1000, headers);
+            logi("download result-    " + x);
+
+        return true;
+
+    } catch (e) {
+        logi("⚠️ 下载失败: " + e.message);
+        return false;
+    }
+}
+
+
+// 直接拼接 TS 文件
+function mergeTsFiles(tempFolder, outputPath) {
+    logi("🔗 开始合并 TS 片段...");
+
+    var folder = new File(tempFolder);
+    if (!folder.exists()) {
+        logi("❌ 临时文件夹不存在");
+        return false;
+    }
+
+    var files = folder.listFiles();
+    if (!files || files.length == 0) {
+        logi("❌ 临时文件夹为空");
+        return false;
+    }
+
+    // 按文件名排序
+    var tsFiles = [];
+    for (var i = 0; i < files.length; i++) {
+        var fileName = files[i].getName();
+        if (fileName.endsWith(".ts") && files[i].length() > 0) {
+            tsFiles.push(files[i]);
+        }
+    }
+    tsFiles.sort(function(a, b) {
+        return a.getName().localeCompare(b.getName());
+    });
+
+    if (tsFiles.length == 0) {
+        logi("❌ 没有找到有效的 TS 文件");
+        return false;
+    }
+
+    logi("📦 找到 " + tsFiles.length + " 个有效 TS 文件");
+
+    try {
+        var outputFile = new File(outputPath);
+        // 如果输出文件已存在，先删除
+        if (outputFile.exists()) {
+            outputFile.delete();
+        }
+        outputFile.getParentFile().mkdirs();
+
+        var outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+        var buffer = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 65536);
+
+        var totalSize = 0;
+        for (var i = 0; i < tsFiles.length; i++) {
+            var inputStream = new BufferedInputStream(new java.io.FileInputStream(tsFiles[i]));
+            var bytesRead = 0;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                totalSize += bytesRead;
+            }
+            inputStream.close();
+
+            if ((i + 1) % 5 == 0 || (i + 1) == tsFiles.length) {
+                logi("⏳ 合并进度: " + (i + 1) + "/" + tsFiles.length);
+            }
+        }
+
+        outputStream.flush();
+        outputStream.close();
+
+        var sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        logi("✅ 合并完成！文件大小: " + sizeMB + " MB");
+        logi("📁 保存路径: " + outputPath);
+        return true;
+
+    } catch (e) {
+        logi("❌ 合并失败: " + e.message);
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
+
+
+// ----- 主函数 -----
+function main() {
+    logi("========================================");
+    logi("🎬 M3U8 下载器 - 调试版");
+    logi("========================================");
+
+    var m3u8Content = null;
+
+    // 尝试方法1：http.httpGet
+    m3u8Content = fetchWithHttpGet(CONFIG.m3u8Url);
+
+    // 如果方法1失败，尝试方法2：HttpURLConnection
+    if (!m3u8Content) {
+        logi("⚠️ 方法1失败，尝试方法2...");
+        m3u8Content = fetchWithHttpURLConnection(CONFIG.m3u8Url);
+    }
+
+    // // 如果方法2也失败，使用方法3：使用你提供的硬编码内容
+    // if (!m3u8Content) {
+    //     logi("⚠️ 方法2也失败，使用方法3（你提供的内容）...");
+    //     m3u8Content = useProvidedContent();
+    // }
+
+    if (!m3u8Content) {
+        logi("❌ 所有方法都失败了");
+        return;
+    }
+
+    // 解析
+    var tsUrls = parseM3U8(m3u8Content, CONFIG.m3u8Url);
+    if (!tsUrls || tsUrls.length == 0) {
+        logi("❌ 解析失败");
+        return;
+    }
+
+    // 创建临时目录
+    var tempFile = new File(CONFIG.tempFolder);
+    if (!tempFile.exists()) {
+        tempFile.mkdirs();
+    }
+
+    // 下载（单线程，方便调试）
+    logi("🚀 开始下载 " + tsUrls.length + " 个片段...");
+    var successCount = 0;
+    for (var i = 0; i < tsUrls.length; i++) {
+        var fileName = "segment_" + String(i).padStart(4, "0") + ".ts";
+        var savePath = CONFIG.tempFolder + fileName;
+
+        logi("⏳ 下载 " + (i+1) + "/" + tsUrls.length + ": " + fileName);
+        logi(tsUrls[i])
+        var result = downloadSingleTs(tsUrls[i], savePath);
+
+        if (result) {
+            successCount++;
+            logi("✅ 成功 (" + successCount + "/" + (i+1) + ")");
+        } else {
+            logi("❌ 失败");
+        }
+    }
+
+    // Step 6: 合并文件（使用方法二：直接拼接）
+    var mergeSuccess = mergeTsFiles(CONFIG.tempFolder, CONFIG.outputPath);
+
+    // 或者使用方法三（带进度）
+    // var mergeSuccess = mergeTsFilesWithProgress(CONFIG.tempFolder, CONFIG.outputPath);
+
+    // Step 7: 清理临时文件
+    if (mergeSuccess) {
+        // 是否保留临时文件？如果设为 false 则删除
+        var keepTemp = false;
+        if (!keepTemp) {
+            cleanTemp(CONFIG.tempFolder);
+        }
+    } else {
+        logi("⚠️ 合并失败，临时文件保留在: " + CONFIG.tempFolder);
+    }
+
+
+
+    logi("📊 下载完成，成功: " + successCount + "/" + tsUrls.length);
+    logi("========================================");
+}
+
+// 运行
+main();

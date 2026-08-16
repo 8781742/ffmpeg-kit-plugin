@@ -1,0 +1,28 @@
+========================================
+  请在 CMD 中执行以下命令
+========================================
+
+打开 CMD (命令提示符)，然后执行:
+----------------------------------------
+cd D:\ec\tengxun
+git remote add origin https://github.com/8781742/ffmpeg-kit-plugin.git
+git branch -M main
+git push -u origin main
+----------------------------------------
+
+注意: 
+- 这会弹出浏览器让你登录 GitHub
+- 或者你可以使用 Personal Access Token
+
+生成 Token 方法:
+1. 打开 https://github.com/settings/tokens
+2. Generate new token (classic)
+3. 勾选 repo 权限
+4. Generate
+5. 复制 Token (只会显示一次)
+
+使用 Token 推送:
+----------------------------------------
+git remote add origin https://8781742:YOUR_TOKEN@github.com/8781742/ffmpeg-kit-plugin.git
+git push -u origin main
+----------------------------------------
