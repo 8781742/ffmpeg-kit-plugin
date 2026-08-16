@@ -25,6 +25,6 @@ android {
 }
 
 dependencies {
-    // 使用本地 FFmpegKit AAR
-    implementation files('libs/ffmpeg-kit.aar')
+    // FFmpegKit from Maven Central
+    implementation 'com.arthenica:ffmpeg-kit-full:6.0-2'
 }
