@@ -1,0 +1,31 @@
+# Build outputs
+build/
+app/build/
+.gradle/
+local.properties
+
+# Android
+*.apk
+*.dex
+*.so
+*.zip
+!FFmpegMerge.dex
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+ai_logs/
+Developer
+Tokens
+
+# Node
+node_modules/
+
+# Temporary
+tmp/
+temp/
+*.tmp
