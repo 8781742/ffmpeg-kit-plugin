@@ -283,9 +283,24 @@
       "Bash(xargs -I{} sh -c 'echo \"{}:\"; \"/{}\" -version 2>&1')",
       "Bash(git push *)",
       "Bash(git rm *)",
-      "Bash(sed -i 's/[a-zA-Z0-9]*//g' .claude/settings.local.json ec-mcp-server/.claude/settings.local.json)",
+      "Bash(sed -i 's/gho_[a-zA-Z0-9]*//g' .claude/settings.local.json ec-mcp-server/.claude/settings.local.json)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git reflog *)",
+      "Bash(git gc *)",
+      "Bash(git *)",
+      "Bash(javac -version)",
+      "Bash(where dx.bat)",
+      "Bash(D:/android-sdk/platform-tools/adb.exe shell *)",
+      "Bash(xxd -l 16 D:/ec/tengxun/FFmpegMergePlugin/output/FFmpegMerge.dex)",
+      "Bash(D:/ec/tengxun/ec_work_config/android/bin/ec-android-cli.exe capture-screen *)",
+      "Bash(D:/ec/tengxun/ec_work_config/android/bin/ec-android-cli.exe monitor *)",
+      "Bash(kill %1)",
+      "Bash(gradle --version)",
+      "Read(//opt/**)",
+      "Bash(find /usr -name \"gradle\" -type f)",
+      "Bash(/tmp/gradle-8.5/bin/gradle wrapper *)",
+      "Bash(/tmp/gradle-7.6.4/bin/gradle wrapper *)"
     ]
   },
   "enabledMcpjsonServers": [

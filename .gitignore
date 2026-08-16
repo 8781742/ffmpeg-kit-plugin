@@ -12,8 +12,7 @@ local.properties
 *.zip
 !FFmpegMerge.dex
 
-# FFmpeg
-FFmpegKit.aar
+# Build artifacts
 FFmpegKitPlugin_full/app/libs/
 FFmpegMergePlugin/output/
 FFmpegMergePlugin/apkproject/
@@ -62,7 +61,7 @@ ffmpeg-android-build-master/ffmpeg-android-build-master/images/
 *.js.map
 *.d.ts.map
 
-# Build artifacts
+# Test scripts
 _ffmpeg_merge_plugin.js
 _test_*.js
 _extract_mhtml.ps1
