@@ -25,6 +25,6 @@ android {
 }
 
 dependencies {
-    // FFmpegKit from Maven Central
-    implementation 'com.arthenica:ffmpeg-kit-full:6.0-2'
+    // FFmpegKit from Maven Central (Java 8 compatible)
+    implementation 'com.arthenica:ffmpeg-kit-full:5.1-1'
 }
